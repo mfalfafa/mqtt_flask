@@ -7,7 +7,7 @@ import paho.mqtt.client as mqtt
 from flask import Flask
 from flask_ask import Ask, statement
 
-pins={"first":3, "second":4, "third":17}
+pins={"1st":3, "second":4, "3rd":17}
 
 app=Flask(__name__)
 ask=Ask(app, '/')
@@ -17,7 +17,7 @@ def led(lamp, status):
   print("============="+ str(lamp.lower()))
   if lamp.lower() not in pins.keys():
      return statement("I don't have {} lamp".format(lamp))
-  GPIO.output(pins[lamp], GPIO.HIGH if status == "on" else GPIO.LOW)
+  GPIO.output(pins[lamp], GPIO.LOW if status == "on" else GPIO.HIGH)
   return statement("Turning the {} lamp {}".format(lamp, status))
 
 turn_off_alarm=0
