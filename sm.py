@@ -10,7 +10,7 @@ eventlet.monkey_patch()
 app = Flask(__name__)
 app.config['SECRET'] = 'my secret key'
 app.config['TEMPLATES_AUTO_RELOAD'] = True
-app.config['MQTT_BROKER_URL'] = 'localhost'
+app.config['MQTT_BROKER_URL'] = '127.0.0.1'
 app.config['MQTT_BROKER_PORT'] = 1883
 app.config['MQTT_USERNAME'] = ''
 app.config['MQTT_PASSWORD'] = ''
@@ -62,7 +62,8 @@ def handle_mqtt_message(client, userdata, message):
 
 @mqtt.on_log()
 def handle_logging(client, userdata, level, buf):
-    print(level, buf)
+    #print(level, buf)
+    pass
 
 
 if __name__ == '__main__':
