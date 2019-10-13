@@ -28,6 +28,24 @@ def alarm(alarm, status):
   GPIO.output(pins[alarm], GPIO.LOW if status == "on" else GPIO.HIGH)
   return statement("Turning the {} {}".format(alarm, status))
 
+@ask.intent('DoorIntent')
+def door(door, status):
+  print("============="+ str(door.lower()))
+  if status=="on":
+     turn_off_door=0
+  else:
+     turn_off_door=1
+  return statement("Enabling the {} {}".format(door, status))
+
+@ask.intent('PirIntent')
+def pir(pir, status):
+  print("============="+ str(pir.lower()))
+  if status=="on":
+     turn_off_pir=0
+  else:
+     turn_off_pir=1
+  return statement("Enabling the {} {}".format(pir, status))
+
 turn_off_alarm=0
 turn_off_pir=0
 turn_off_door=0
