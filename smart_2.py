@@ -154,6 +154,7 @@ GPIO.setup(19, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 @mqtt.on_connect()
 def handle_connect(client, userdata, flags, rc):
+   print('CONNECT =============================================')
    mqtt.subscribe("turn_on_plug")
    mqtt.subscribe("turn_off_plug")
    mqtt.subscribe("turn_on_lamp1")
@@ -536,7 +537,7 @@ if __name__=='__main__':
    app.run()
    while 1:
       pass
-      #mqttc.loop(timeout=0.001)
+      mqtt.loop(timeout=0.001)
 
 GPIO.cleanup()
 
