@@ -7,6 +7,12 @@ import paho.mqtt.client as mqtt
 from flask import Flask
 from flask_ask import Ask, statement
 
+turn_off_alarm=0
+turn_off_pir=0
+turn_off_door=0
+door_status=0
+ready=0
+start=0
 pins={"1st":3, "second":4, "3rd":17, 'alarm':2, 'fan':10}
 
 app=Flask(__name__)
@@ -55,13 +61,6 @@ def fan(fan, status):
      return statement("I don't have {}".format(fan))
   GPIO.output(pins[fan], GPIO.HIGH if status == "on" else GPIO.LOW)
   return statement("Turning the {} {}".format(fan, status))
-
-turn_off_alarm=0
-turn_off_pir=0
-turn_off_door=0
-door_status=0
-ready=0
-start=0
 
 GPIO.setmode(GPIO.BCM)
 
@@ -420,28 +419,35 @@ class doorThread(threading.Thread):
    def run(self):
       doorRun()
 def doorRun():
-   global door_status, turn_off_alarm
+   global door_status, turn_off_alarm, turn_off_door
    while 1:
       # alarm for safety using pir sensor
       f=0
-      while GPIO.input(door)==1:
+      if turn_off_door==0:
+         while GPIO.input(door)==1:
+            if f==0:
+               f=1
+               print("DOOR")
+               door_status="close"
+               GPIO.output(alarm,1)
+               time.sleep(0.1)
+         f=0
+         while GPIO.input(door)==0:
+            if f==0:
+               f=1
+               print("DOOR 2")
+               door_status="open"
+            if turn_off_alarm==0:
+               GPIO.output(alarm,0)
+            elif turn_off_alarm==1:
+               GPIO.output(alarm,1)
+            time.sleep(0.1)
+      else:
          if f==0:
             f=1
-            print("DOOR")
-            door_status="close"
             GPIO.output(alarm,1)
             time.sleep(0.1)
-      f=0
-      while GPIO.input(door)==0:
-         if f==0:
-            f=1
-            print("DOOR 2")
-            door_status="open"
-         if turn_off_alarm==0:
-            GPIO.output(alarm,0)
-         elif turn_off_alarm==1:
-            GPIO.output(alarm,1)
-         time.sleep(0.1)
+
 
 
 try:
