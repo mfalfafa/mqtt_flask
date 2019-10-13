@@ -13,7 +13,7 @@ pins={"red":3, "yellow":4, "green":17}
 
 app=Flask(__name__)
 ask=Ask(app, '/')
-app.config['MQTT_BROKER_URL']='127.0.0.1'
+app.config['MQTT_BROKER_URL']='localhost'
 app.config['MQTT_BROKER_PORT']=1883
 app.config['MQTT_USERNAME']=''
 app.config['MQTT_PASSWORD']=''
