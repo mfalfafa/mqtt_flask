@@ -14,6 +14,7 @@ ask=Ask(app, '/')
 
 @ask.intent('LedIntent')
 def led(lamp, status):
+  print("============="+ str(lamp.lower()))
   if lamp.lower() not in pins.keys():
      return statement("I don't have {} lamp".format(lamp))
   GPIO.output(pins[lamp], GPIO.HIGH if status == "on" else GPIO.LOW)
