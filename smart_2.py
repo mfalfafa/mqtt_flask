@@ -2,6 +2,7 @@ import RPi.GPIO as GPIO
 
 import time
 import threading
+from threading import Thread
 import paho.mqtt.client as mqtt
 from flask import Flask
 from flask_ask import Ask, statement
