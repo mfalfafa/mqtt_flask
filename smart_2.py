@@ -7,7 +7,7 @@ import paho.mqtt.client as mqtt
 from flask import Flask
 from flask_ask import Ask, statement
 
-pins={"1st":3, "second":4, "3rd":17, 'alarm':2}
+pins={"1st":3, "second":4, "3rd":17, 'alarm':2, 'fan':10}
 
 app=Flask(__name__)
 ask=Ask(app, '/')
@@ -30,6 +30,7 @@ def alarm(alarm, status):
 
 @ask.intent('DoorIntent')
 def door(door, status):
+  global turn_off_door
   print("============="+ str(door.lower()))
   if status=="on":
      turn_off_door=0
@@ -39,12 +40,21 @@ def door(door, status):
 
 @ask.intent('PirIntent')
 def pir(pir, status):
+  global turn_off_pir
   print("============="+ str(pir.lower()))
   if status=="on":
      turn_off_pir=0
   else:
      turn_off_pir=1
   return statement("Enabling the {} {}".format(pir, status))
+
+@ask.intent('FanIntent')
+def fan(fan, status):
+  print("============="+ str(fan.lower()))
+  if fan.lower() not in pins.keys():
+     return statement("I don't have {}".format(fan))
+  GPIO.output(pins[fan], GPIO.HIGH if status == "on" else GPIO.LOW)
+  return statement("Turning the {} {}".format(fan, status))
 
 turn_off_alarm=0
 turn_off_pir=0
