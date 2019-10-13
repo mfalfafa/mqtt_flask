@@ -1,6 +1,7 @@
 import time
 from threading import Thread
 from flask import Flask, jsonify, request
+from flask_ask import Ask, statement
 
 app=Flask(__name__)
 ask=Ask(app, '/')
