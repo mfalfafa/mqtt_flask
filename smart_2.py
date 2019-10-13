@@ -1,31 +1,22 @@
 import RPi.GPIO as GPIO
+
 import time
 import threading
-#import paho.mqtt.client as mqtt
-
+import paho.mqtt.client as mqtt
 from flask import Flask
 from flask_ask import Ask, statement
-from flask_mqtt import Mqtt
-#from flask_socketio import SocketIO
-#import subprocess
 
 pins={"red":3, "yellow":4, "green":17}
 
 app=Flask(__name__)
 ask=Ask(app, '/')
-app.config['MQTT_BROKER_URL']='localhost'
-app.config['MQTT_BROKER_PORT']=1883
-app.config['MQTT_USERNAME']=''
-app.config['MQTT_PASSWORD']=''
-app.config['MQTT_REFRESH_TIME']=0.05
-mqtt=Mqtt(app)
 
 @ask.intent('LedIntent')
 def led(color, status):
-   if color.lower() not in pins.keys():
-      return statement("I don't have {} light".format(color))
-   GPIO.output(pins[color], GPIO.HIGH if status == "on" else GPIO.LOW)
-   return statement("Turning the {} light {}".format(color, status))
+  if color.lower() not in pins.keys():
+     return statement("I don't have {} light".format(color))
+  GPIO.output(pins[color], GPIO.HIGH if status == "on" else GPIO.LOW)
+  return statement("Turning the {} light {}".format(color, status))
 
 turn_off_alarm=0
 turn_off_pir=0
@@ -152,134 +143,48 @@ GPIO.add_event_callback(13, pb_lamp3_event)
 pb_pir=19
 GPIO.setup(19, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
-@mqtt.on_connect()
-def handle_connect(client, userdata, flags, rc):
-   print('CONNECT =============================================')
-   mqtt.subscribe("turn_on_plug")
-   mqtt.subscribe("turn_off_plug")
-   mqtt.subscribe("turn_on_lamp1")
-   mqtt.subscribe("turn_off_lamp1")
-   mqtt.subscribe("turn_on_lamp2")
-   mqtt.subscribe("turn_off_lamp2")
-   mqtt.subscribe("turn_on_lamp3")
-   mqtt.subscribe("turn_off_lamp3")
-   mqtt.subscribe("turn_on_fan")
-   mqtt.subscribe("turn_off_fan")
-   mqtt.subscribe("turn_off_alarm")
-   mqtt.subscribe("turn_on_alarm")
-   mqtt.subscribe("turn_off_pir")
-   mqtt.subscribe("turn_on_pir")
-   mqtt.subscribe("turn_off_door")
-   mqtt.subscribe("turn_on_door")
-
-@mqtt.on_message()
-def handle_mqtt_message(client, userdata, message):
-   global turn_off_alarm, turn_off_pir, turn_off_door, ready, start
-   print(msg.topic+ " "+ str(msg.payload))
-   if ready==1 or start>=17:
-      if msg.topic=="turn_on_lamp1":
-         #print(msg.topic)
-         GPIO.output(lamp1, 0)
-      elif msg.topic=="turn_on_lamp2":
-         #print(msg.topic)
-         GPIO.output(lamp2, 0)
-      elif msg.topic=="turn_on_lamp3":
-         #print(msg.topic)
-         GPIO.output(lamp3, 0)
-      elif msg.topic=="turn_on_plug":
-         #print(msg.topic)
-         GPIO.output(plug, 1)
-      elif msg.topic=="turn_on_fan":
-         #print(msg.topic)
-         GPIO.output(kipas, 1)
-      elif msg.topic=="turn_on_alarm":
-         #print(msg.topic)
-         turn_off_alarm=0
-      elif msg.topic=="turn_off_lamp1":
-         #print(msg.topic)
-         GPIO.output(lamp1, 1)
-      elif msg.topic=="turn_off_lamp2":
-         #print(msg.topic)
-         GPIO.output(lamp2, 1)
-      elif msg.topic=="turn_off_lamp3":
-         #print(msg.topic)
-         GPIO.output(lamp3, 1)
-      elif msg.topic=="turn_off_plug":
-         #print(msg.topic)
-         GPIO.output(plug, 0)
-      elif msg.topic=="turn_off_fan":
-         #print(msg.topic)
-         GPIO.output(kipas, 0)
-      elif msg.topic=="turn_off_alarm":
-         #print(msg.topic)
-         turn_off_alarm=1
-      elif msg.topic=="turn_off_pir":
-         turn_off_pir=1
-      elif msg.topic=="turn_on_pir":
-         turn_off_pir=0
-      elif msg.topic=="turn_on_door":
-         turn_off_door=0
-      elif msg.topic=="turn_off_door":
-         turn_off_door=1
 
 def on_connect(mqttc, obj, flags, rc):
-   print("AAAAAAA ======================================= rc: "+ str(rc))
-   mqttc.subscribe("turn_on_plug")
-   mqttc.subscribe("turn_off_plug")
-   mqttc.subscribe("turn_on_lamp1")
-   mqttc.subscribe("turn_off_lamp1")
-   mqttc.subscribe("turn_on_lamp2")
-   mqttc.subscribe("turn_off_lamp2")
-   mqttc.subscribe("turn_on_lamp3")
-   mqttc.subscribe("turn_off_lamp3")
-   mqttc.subscribe("turn_on_fan")
-   mqttc.subscribe("turn_off_fan")
-   mqttc.subscribe("turn_off_alarm")
-   mqttc.subscribe("turn_on_alarm")
-   mqttc.subscribe("turn_off_pir")
-   mqttc.subscribe("turn_on_pir")
-   mqttc.subscribe("turn_off_door")
-   mqttc.subscribe("turn_on_door")
-
+   print("rc: "+ str(rc))
 def on_message(mqttc, obj, msg):
    global turn_off_alarm, turn_off_pir, turn_off_door, ready, start
    print(msg.topic+ " "+ str(msg.payload))
    if ready==1 or start>=17:
       if msg.topic=="turn_on_lamp1":
-         #print(msg.topic)
+         print(msg.topic)
          GPIO.output(lamp1, 0)
       elif msg.topic=="turn_on_lamp2":
-         #print(msg.topic)
+         print(msg.topic)
          GPIO.output(lamp2, 0)
       elif msg.topic=="turn_on_lamp3":
-         #print(msg.topic)
+         print(msg.topic)
          GPIO.output(lamp3, 0)
       elif msg.topic=="turn_on_plug":
-         #print(msg.topic)
+         print(msg.topic)
          GPIO.output(plug, 1)
       elif msg.topic=="turn_on_fan":
-         #print(msg.topic)
+         print(msg.topic)
          GPIO.output(kipas, 1)
       elif msg.topic=="turn_on_alarm":
-         #print(msg.topic)
+         print(msg.topic)
          turn_off_alarm=0
       elif msg.topic=="turn_off_lamp1":
-         #print(msg.topic)
+         print(msg.topic)
          GPIO.output(lamp1, 1)
       elif msg.topic=="turn_off_lamp2":
-         #print(msg.topic)
+         print(msg.topic)
          GPIO.output(lamp2, 1)
       elif msg.topic=="turn_off_lamp3":
-         #print(msg.topic)
+         print(msg.topic)
          GPIO.output(lamp3, 1)
       elif msg.topic=="turn_off_plug":
-         #print(msg.topic)
+         print(msg.topic)
          GPIO.output(plug, 0)
       elif msg.topic=="turn_off_fan":
-         #print(msg.topic)
+         print(msg.topic)
          GPIO.output(kipas, 0)
       elif msg.topic=="turn_off_alarm":
-         #print(msg.topic)
+         print(msg.topic)
          turn_off_alarm=1
       elif msg.topic=="turn_off_pir":
          turn_off_pir=1
@@ -293,7 +198,6 @@ def on_message(mqttc, obj, msg):
 
 def on_publish(mqttc, obj, mid):
    print("publish "+ str(mid))
-
 def on_subscribe(mqttc, obj, mid, granted_qos):
    print("Subscribed: "+ str(mid)+ " "+ str(granted_qos))
 def on_log(mqttc, obj, level, string):
@@ -301,42 +205,40 @@ def on_log(mqttc, obj, level, string):
 def on_disconnect(client, userdata, rc):
    print("Disconnect: "+ str(rc))
 
-#mqttc=mqtt.Client()
-#mqttc.on_message=on_message
-#mqttc.on_connect=on_connect
-#mqttc.on_publish=on_publish
-#mqttc.on_subscribe=on_subscribe
-#mqttc.on_disconnect=on_disconnect
-#mqttc.loop_start()
+mqttc=mqtt.Client()
+mqttc.on_message=on_message
+mqttc.on_connect=on_connect
+mqttc.on_publish=on_publish
+mqttc.on_subscribe=on_subscribe
+mqttc.on_disconnect=on_disconnect
 
 ready_f=0
-#while 1:
-#   try:
-#      mqttc.connect("127.0.0.1", 1883, 60)
-      #mqttc.connect("localhost")
-#      ready_f=1
-#   except:
-#      print("Waiting for the server...")
-#      time.sleep(1)
-#   if ready_f==1:
-#      break
+while 1:
+   try:
+      mqttc.connect("127.0.0.1", 1883, 60)
+      ready_f=1
+   except:
+      print("Waiting for the server...")
+      time.sleep(1)
+   if ready_f==1:
+      break
 
-#mqttc.subscribe("turn_on_plug")
-#mqttc.subscribe("turn_off_plug")
-#mqttc.subscribe("turn_on_lamp1")
-#mqttc.subscribe("turn_off_lamp1")
-#mqttc.subscribe("turn_on_lamp2")
-#mqttc.subscribe("turn_off_lamp2")
-#mqttc.subscribe("turn_on_lamp3")
-#mqttc.subscribe("turn_off_lamp3")
-#mqttc.subscribe("turn_on_fan")
-#mqttc.subscribe("turn_off_fan")
-#mqttc.subscribe("turn_off_alarm")
-#mqttc.subscribe("turn_on_alarm")
-#mqttc.subscribe("turn_off_pir")
-#mqttc.subscribe("turn_on_pir")
-#mqttc.subscribe("turn_off_door")
-#mqttc.subscribe("turn_on_door")
+mqttc.subscribe("turn_on_plug")
+mqttc.subscribe("turn_off_plug")
+mqttc.subscribe("turn_on_lamp1")
+mqttc.subscribe("turn_off_lamp1")
+mqttc.subscribe("turn_on_lamp2")
+mqttc.subscribe("turn_off_lamp2")
+mqttc.subscribe("turn_on_lamp3")
+mqttc.subscribe("turn_off_lamp3")
+mqttc.subscribe("turn_on_fan")
+mqttc.subscribe("turn_off_fan")
+mqttc.subscribe("turn_off_alarm")
+mqttc.subscribe("turn_on_alarm")
+mqttc.subscribe("turn_off_pir")
+mqttc.subscribe("turn_on_pir")
+mqttc.subscribe("turn_off_door")
+mqttc.subscribe("turn_on_door")
 
 class sendDataThread(threading.Thread):
    def __init__(self):
@@ -346,17 +248,17 @@ class sendDataThread(threading.Thread):
 def sendData():
    global door_status
    while 1:
-      mqtt.publish("get_lamp1_data", str(GPIO.input(lamp1)))
-      mqtt.publish("get_lamp2_data", str(GPIO.input(lamp2)))
-      mqtt.publish("get_lamp3_data", str(GPIO.input(lamp3)))
-      mqtt.publish("get_pir_data", str(GPIO.input(sen_pir)))
-      mqtt.publish("get_plug_data", str(GPIO.input(plug)))
-      mqtt.publish("get_alarm_data", str(GPIO.input(alarm)))
-      mqtt.publish("get_fan_data", str(GPIO.input(kipas)))
-      mqtt.publish("get_door_data", str(door_status))
-      mqtt.publish("get_pir_control_status", str(1 if turn_off_pir==0 else 0))
-      mqtt.publish("get_alarm_control_status", str(1 if turn_off_alarm==0 else 0))
-      mqtt.publish("get_door_control_status", str(1 if turn_off_door==0 else 0))
+      mqttc.publish("get_lamp1_data", str(GPIO.input(lamp1)))
+      mqttc.publish("get_lamp2_data", str(GPIO.input(lamp2)))
+      mqttc.publish("get_lamp3_data", str(GPIO.input(lamp3)))
+      mqttc.publish("get_pir_data", str(GPIO.input(sen_pir)))
+      mqttc.publish("get_plug_data", str(GPIO.input(plug)))
+      mqttc.publish("get_alarm_data", str(GPIO.input(alarm)))
+      mqttc.publish("get_fan_data", str(GPIO.input(kipas)))
+      mqttc.publish("get_door_data", str(door_status))
+      mqttc.publish("get_pir_control_status", str(1 if turn_off_pir==0 else 0))
+      mqttc.publish("get_alarm_control_status", str(1 if turn_off_alarm==0 else 0))
+      mqttc.publish("get_door_control_status", str(1 if turn_off_door==0 else 0))
       time.sleep(0.1)
 
 class lamp2Thread(threading.Thread):
@@ -461,6 +363,12 @@ def alarmEvent():
             f=1
             print("pir is turned off")
 
+class FlaskThread(Thread):
+    def run(self):
+        app.run(
+            host='127.0.0.1', port=5000, debug=True, use_debugger=True,
+            use_reloader=False)
+
 #class webserverThread(threading.Thread):
 #   def __init__(self):
 #      threading.Thread.__init__(self)
@@ -527,17 +435,12 @@ ready=1
 #subprocess("ssh -R 80:localhost:5000 serveo.net")
 if __name__=='__main__':
    #webserverThread.start()
-   #mqttc=mqtt.Client()
-   #mqttc.on_message=on_message
-   #mqttc.on_connect=on_connect
-   #mqttc.on_publish=on_publish
-   #mqttc.on_subscribe=on_subscribe
-   #mqttc.on_disconnect=on_disconnect
-
-   app.run()
+   server = FlaskThread()
+   server.daemon = True
+   server.start()
+   
    while 1:
-      pass
-      mqtt.loop(timeout=0.001)
+      mqttc.loop(timeout=0.001)
 
 GPIO.cleanup()
 
